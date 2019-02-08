@@ -1,0 +1,14 @@
+E:\STEP\myhomework2017\StringCoder\StringCoder\bin\Release\StringCoder.exe.config
+E:\STEP\myhomework2017\StringCoder\StringCoder\bin\Release\StringCoder.exe
+E:\STEP\myhomework2017\StringCoder\StringCoder\bin\Release\StringCoder.pdb
+E:\STEP\myhomework2017\StringCoder\StringCoder\obj\Release\MainWindow.g.cs
+E:\STEP\myhomework2017\StringCoder\StringCoder\obj\Release\App.g.cs
+E:\STEP\myhomework2017\StringCoder\StringCoder\obj\Release\StringCoder_MarkupCompile.cache
+E:\STEP\myhomework2017\StringCoder\StringCoder\obj\Release\StringCoder_MarkupCompile.lref
+E:\STEP\myhomework2017\StringCoder\StringCoder\obj\Release\MainWindow.baml
+E:\STEP\myhomework2017\StringCoder\StringCoder\obj\Release\StringCoder.g.resources
+E:\STEP\myhomework2017\StringCoder\StringCoder\obj\Release\StringCoder.Properties.Resources.resources
+E:\STEP\myhomework2017\StringCoder\StringCoder\obj\Release\StringCoder.csproj.GenerateResource.cache
+E:\STEP\myhomework2017\StringCoder\StringCoder\obj\Release\StringCoder.csproj.CoreCompileInputs.cache
+E:\STEP\myhomework2017\StringCoder\StringCoder\obj\Release\StringCoder.exe
+E:\STEP\myhomework2017\StringCoder\StringCoder\obj\Release\StringCoder.pdb
