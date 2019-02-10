@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StringCoder"
         mc:Ignorable="d"
-        Title="StringCoder" Height="370" Width="490">
+        Title="StringCoder" Height="370" Width="630">
     <Grid>
         <StackPanel HorizontalAlignment="Left">
             <Label Content="  Input your text"/>
@@ -15,8 +15,18 @@
             <Label Content="  Your Decoded text"/>
             <TextBox Name="DecodedText" TextWrapping="Wrap" Height="80" Width="360" Margin="10,0,0,0"/>
         </StackPanel>
-        
+
         <Button Name="Encode" Content="Encode" HorizontalAlignment="Left" VerticalAlignment="Top" Width="95" Margin="375,26,0,0" Click="EncodeText"/>
         <Button Name="Decode" Content="Decode" HorizontalAlignment="Left" VerticalAlignment="Top" Width="95" Margin="375,132,0,0" Click="DecodeText"/>
+
+        <Label Margin="483,0,17,304" Content="Select a chiper:"></Label>
+        <ComboBox Name ="Chiper" HorizontalAlignment="Left" Margin="490,26,0,0" VerticalAlignment="Top" Width="115" Height="20" SelectionChanged="Chiper_SelectionChanged">
+            <TextBlock>Caesar cipher</TextBlock>
+        </ComboBox>
+
+        <Label Content="Enter a key:" Margin="483,51,24,250" Width="115"/>
+        <TextBox Name="tbKey" HorizontalAlignment="Left" Height="20" Margin="490,75,0,0" VerticalAlignment="Top" Width="115" PreviewTextInput="TextBox_PreviewTextInput"/>
+
+
     </Grid>
 </Window>

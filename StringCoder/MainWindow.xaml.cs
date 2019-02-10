@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace StringCoder
 {
@@ -19,8 +11,9 @@ namespace StringCoder
     {
         readonly char[] alphabet = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
         readonly char[] alphabetUpper = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-        readonly string[] charsToRemove = new string []{ ",", ".", ";", ":", "@", "!", "#" };
-        int key = 1;
+        readonly string[] charsToRemove = new string[] { ",", ".", ";", ":", "@", "!", "#", "$", "%", "*", "(", ")", "[", "]", "^", "?", "|", "+", "-", "&", @"\", "/", "'" };
+        private static int key = 0;
+
 
         public MainWindow()
         {
@@ -29,80 +22,102 @@ namespace StringCoder
 
         private void EncodeText(object sender, RoutedEventArgs e)
         {
-            if (EncodedText.Text != "")
+            if (Chiper.Text == "Caesar cipher" && tbKey.Text != "")
             {
-                EncodedText.Clear();
-            }
-
-            try
-            {
-                foreach (var item in charsToRemove)
+                key = Convert.ToInt32(tbKey.Text);
+                if (EncodedText.Text != "")
                 {
-                    YourText.Text = YourText.Text.Replace(item, string.Empty);
+                    EncodedText.Clear();
                 }
-                
-                char[] text = YourText.Text.ToCharArray().Where(s => !char.IsWhiteSpace(s)).ToArray();
-
-                for (int i = 0; i < text.Length; i++)
+                try
                 {
-                    for (int j = 0; j <= alphabet.Length && j <= alphabetUpper.Length; j++)
+                    foreach (var item in charsToRemove)
                     {
-                        if (text[i].ToString() == alphabet[j].ToString() || text[i].ToString() == alphabetUpper[j].ToString())
+                        YourText.Text = YourText.Text.Replace(item, string.Empty);
+                    }
+
+                    char[] text = YourText.Text.ToCharArray().Where(s => !char.IsWhiteSpace(s)).ToArray();
+
+                    for (int i = 0; i < text.Length; i++)
+                    {
+                        for (int j = 0; j <= alphabet.Length && j <= alphabetUpper.Length; j++)
                         {
+                            if (text[i].ToString() == alphabet[j].ToString() || text[i].ToString() == alphabetUpper[j].ToString())
+                            {
+                                char.ToLower(text[i]);
 
-                            //text[i] = Convert.ToChar(text[i].ToString().Replace(text[i], Convert.ToChar("")));
-                            
-                            //charsToRemove[i].ToString().Replace(Convert.ToChar(text[i]), Convert.ToChar(""));
-                            char.ToLower(text[i]);
-
-                            text[i] = Convert.ToChar(alphabet[(j + key) % alphabet.Length]);
-                            EncodedText.Text += text[i].ToString();
-                            break;
+                                text[i] = Convert.ToChar(alphabet[(j + key) % alphabet.Length]);
+                                EncodedText.Text += text[i].ToString();
+                                break;
+                            }
+                            continue;
                         }
-                        continue;
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            else
+                MessageBox.Show("Enter a key!");
         }
 
         private void DecodeText(object sender, RoutedEventArgs e)
         {
-            if (DecodedText.Text != "")
+            if (Chiper.Text == "Caesar cipher")
             {
-                DecodedText.Clear();
-            }
-            try
-            {
-                int temp = 0;
-                char[] text = EncodedText.Text.ToCharArray();
-                for (int i = 0; i < text.Length; i++)
+                if (DecodedText.Text != "")
                 {
-                    for (int j = 0; j <= alphabet.Length; j++)
+                    DecodedText.Clear();
+                }
+                try
+                {
+                    int temp = 0;
+                    char[] text = EncodedText.Text.ToCharArray();
+                    for (int i = 0; i < text.Length; i++)
                     {
-                        if (text[i].ToString() == alphabet[j].ToString())
+                        for (int j = 0; j <= alphabet.Length; j++)
                         {
-                            temp = j - key;
+                            if (text[i].ToString() == alphabet[j].ToString())
+                            {
+                                temp = j - key;
 
-                            if (temp < 0)
-                                temp += alphabet.Length;
-                            if (temp >= alphabet.Length)
-                                temp -= alphabet.Length;
+                                if (temp < 0)
+                                    temp += alphabet.Length;
+                                if (temp >= alphabet.Length)
+                                    temp -= alphabet.Length;
 
-                            text[i] = alphabet[temp];
-                            DecodedText.Text += text[i];
-                            break;
+                                DecodedText.Text += alphabet[temp];
+                                break;
+                            }
+                            continue;
                         }
-                        continue;
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            catch (Exception ex)
+        }
+
+        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            e.Handled = Regex.IsMatch(e.Text, "[^0-9.]+");
+        }
+
+        private void Chiper_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(Chiper.SelectedIndex == 0)
             {
-                MessageBox.Show(ex.Message);
+                tbKey.IsHitTestVisible = true;
+            }
+            else
+            {
+                tbKey.IsHitTestVisible = false;
+                tbKey.Clear();
             }
         }
     }
