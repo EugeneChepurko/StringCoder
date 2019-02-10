@@ -12,7 +12,7 @@
             <TextBox Name="YourText"  TextWrapping="Wrap" Height="80" Width="360" Margin="10,0,0,0"/>
             <Label Content="  Your encoded text"/>
             <TextBox Name="EncodedText" TextWrapping="Wrap" Height="80" Width="360" Margin="10,0,0,0"/>
-            <Label Content="  Your Decoded text"/>
+            <Label Name="lbDecText" Content="  Your Decoded text"/>
             <TextBox Name="DecodedText" TextWrapping="Wrap" Height="80" Width="360" Margin="10,0,0,0"/>
         </StackPanel>
 
@@ -22,11 +22,14 @@
         <Label Margin="483,0,17,304" Content="Select a chiper:"></Label>
         <ComboBox Name ="Chiper" HorizontalAlignment="Left" Margin="490,26,0,0" VerticalAlignment="Top" Width="115" Height="20" SelectionChanged="Chiper_SelectionChanged">
             <TextBlock>Caesar cipher</TextBlock>
+            <TextBlock>HashFunc</TextBlock>
         </ComboBox>
 
         <Label Content="Enter a key:" Margin="483,51,24,250" Width="115"/>
         <TextBox Name="tbKey" HorizontalAlignment="Left" Height="20" Margin="490,75,0,0" VerticalAlignment="Top" Width="115" PreviewTextInput="TextBox_PreviewTextInput"/>
 
+        <Label Content="Text from comparable hash:" HorizontalAlignment="Left" Margin="370,212,0,0" VerticalAlignment="Top"/>
+        <TextBox Name="tbTextfromDecrHash" HorizontalAlignment="Left" Height="80" Margin="375,238,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230"/>
 
     </Grid>
 </Window>

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,17 +16,21 @@ namespace StringCoder
         readonly char[] alphabetUpper = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
         readonly string[] charsToRemove = new string[] { ",", ".", ";", ":", "@", "!", "#", "$", "%", "*", "(", ")", "[", "]", "^", "?", "|", "+", "-", "&", @"\", "/", "'" };
         private static int key = 0;
+        string current = null;
+        string prev = null;
 
 
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent();         
         }
 
         private void EncodeText(object sender, RoutedEventArgs e)
         {
+            // Caesar cipher
             if (Chiper.Text == "Caesar cipher" && tbKey.Text != "")
             {
+                Decode.Content = "Decode";
                 key = Convert.ToInt32(tbKey.Text);
                 if (EncodedText.Text != "")
                 {
@@ -59,12 +66,32 @@ namespace StringCoder
                     MessageBox.Show(ex.Message);
                 }
             }
-            else
-                MessageBox.Show("Enter a key!");
+
+            // HASHFUNC
+            if (Chiper.Text == "HashFunc")
+            {
+                lbDecText.Content = "  Comparable hash";
+                Decode.Content = "Check!";
+                string text = YourText.Text;
+
+                if (string.IsNullOrEmpty(text))
+                {
+                    text = string.Empty;
+                }     
+
+                using (SHA256Managed sha = new SHA256Managed())
+                {
+                    byte[] textData = Encoding.Default.GetBytes(text);
+                    byte[] hash = sha.ComputeHash(textData);
+                    EncodedText.Text = BitConverter.ToString(hash).Replace("-", string.Empty); 
+                }
+                current = EncodedText.Text;
+            }
         }
 
         private void DecodeText(object sender, RoutedEventArgs e)
         {
+            // Caesar cipher 
             if (Chiper.Text == "Caesar cipher")
             {
                 if (DecodedText.Text != "")
@@ -98,10 +125,34 @@ namespace StringCoder
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                }  
+            }
+
+            // HASHFUNC
+            if (Chiper.Text == "HashFunc")
+            {
+                if (DecodedText.Text == "")
+                {
+                    DecodedText.Text = EncodedText.Text;
                 }
+                else
+                {
+                    prev = DecodedText.Text;
+                    if (current == prev)
+                    {
+                        MessageBox.Show("Hashas is concurrence!");
+                        prev = current;
+                        tbTextfromDecrHash.Text = YourText.Text;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Hashas is not concurrence!");
+                    }                     
+                }            
             }
         }
 
+        // events
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -110,7 +161,8 @@ namespace StringCoder
 
         private void Chiper_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(Chiper.SelectedIndex == 0)
+            DecodedText.Clear();
+            if (Chiper.SelectedIndex == 0)
             {
                 tbKey.IsHitTestVisible = true;
             }
