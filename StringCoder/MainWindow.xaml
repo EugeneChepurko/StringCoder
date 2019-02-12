@@ -20,9 +20,10 @@
         <Button Name="Decode" Content="Decode" HorizontalAlignment="Left" VerticalAlignment="Top" Width="95" Margin="375,132,0,0" Click="DecodeText"/>
 
         <Label Margin="483,0,17,304" Content="Select a chiper:"></Label>
-        <ComboBox Name ="Chiper" HorizontalAlignment="Left" Margin="490,26,0,0" VerticalAlignment="Top" Width="115" Height="20" SelectionChanged="Chiper_SelectionChanged">
+        <ComboBox Name ="Cipher" HorizontalAlignment="Left" Margin="490,26,0,0" VerticalAlignment="Top" Width="115" Height="20" SelectionChanged="Cipher_SelectionChanged">
             <TextBlock>Caesar cipher</TextBlock>
             <TextBlock>HashFunc</TextBlock>
+            <TextBlock>Vigenere cipher</TextBlock>
         </ComboBox>
 
         <Label Content="Enter a key:" Margin="483,51,24,250" Width="115"/>

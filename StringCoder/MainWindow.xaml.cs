@@ -28,7 +28,7 @@ namespace StringCoder
         private void EncodeText(object sender, RoutedEventArgs e)
         {
             // Caesar cipher
-            if (Chiper.Text == "Caesar cipher" && tbKey.Text != "")
+            if (Cipher.Text == "Caesar cipher" && tbKey.Text != "")
             {
                 Decode.Content = "Decode";
                 key = Convert.ToInt32(tbKey.Text);
@@ -68,7 +68,7 @@ namespace StringCoder
             }
 
             // HASHFUNC
-            if (Chiper.Text == "HashFunc")
+            if (Cipher.Text == "HashFunc")
             {
                 lbDecText.Content = "  Comparable hash";
                 Decode.Content = "Check!";
@@ -87,12 +87,77 @@ namespace StringCoder
                 }
                 current = EncodedText.Text;
             }
+
+            //  Vigenere cipher
+            if(Cipher.Text == "Vigenere cipher")
+            {
+                char[] text = YourText.Text.ToCharArray().Where(s => !char.IsWhiteSpace(s)).ToArray();
+                char[] key = tbKey.Text.ToCharArray();
+                try
+                {
+                    char[,] Vigenere_Table = new char[26, 26];
+
+                    int temp = 0;
+                    for (int i = 0; i < alphabet.Length; i++)
+                    {
+                        for (int j = 0; j < 26; j++)
+                        {
+                            temp = j + i;
+                            if (temp >= 26)
+                            {
+                                temp = temp % 26;
+                            }
+                            Vigenere_Table[i, j] = alphabet[temp];
+                        }
+                    }
+                    for (int i = 0; i < text.Length; i++)
+                    {
+                        for (int j = 0; j <= alphabet.Length; j++)
+                        {
+                            for (int k = 0; k <= key.Length; k++)
+                            {
+                                //1st variant
+                                if (text[i].ToString() == alphabet[j].ToString() && key[k].ToString() == alphabet[j].ToString())
+                                {
+
+                                    text[i] = key[k];
+
+                                    EncodedText.Text += key[k];
+                                    break;
+                                }
+                                continue;
+                                //2nd variant
+                                if (text[i].ToString() == Vigenere_Table[i, 0].ToString() && key[i].ToString() == Vigenere_Table[0, i].ToString())
+                                {
+
+                                }
+                            }
+                                                     
+                        }
+                        //i = Vigenere_Table[0, 0];
+                    }
+
+
+
+                    //for (int i = 0; i < text.Length; i++)
+                    //{
+                    //    for (int j = 0; j < VigenereCipher().Length; j++)
+                    //    {
+                    //        if(text[i] == )
+                    //    }
+                    //}
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
         private void DecodeText(object sender, RoutedEventArgs e)
         {
             // Caesar cipher 
-            if (Chiper.Text == "Caesar cipher")
+            if (Cipher.Text == "Caesar cipher")
             {
                 if (DecodedText.Text != "")
                 {
@@ -129,7 +194,7 @@ namespace StringCoder
             }
 
             // HASHFUNC
-            if (Chiper.Text == "HashFunc")
+            if (Cipher.Text == "HashFunc")
             {
                 if (DecodedText.Text == "")
                 {
@@ -152,17 +217,52 @@ namespace StringCoder
             }
         }
 
+        //  Vigenere cipher
+        private char[,] VigenereCipher()
+        {
+            char[,] Virenege_Table = new char[26, 26];
+
+            int temp = 0;
+            for (int i = 0; i < alphabet.Length; i++)
+            {
+                for (int j = 0; j < 26; j++)
+                {
+                    temp = j + i;
+                    if (temp >= 26)
+                    {
+                        temp = temp % 26;
+                    }
+                    Virenege_Table[i, j] = alphabet[temp];
+                    //Console.Write(" " + Virenege_Table[i, j]);
+                }
+                //Console.WriteLine();
+            }
+            ////test of table
+            //Console.WriteLine(alf_Virenege[0, 0]);
+            return Virenege_Table;
+        }
+
         // events
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            TextBox textBox = sender as TextBox;
-            e.Handled = Regex.IsMatch(e.Text, "[^0-9.]+");
+            if(Cipher.SelectedIndex == 2)
+            {
+                TextBox textBox = sender as TextBox;
+                e.Handled = Regex.IsMatch(e.Text, "[^a-z.]+");
+            }
+            else
+            {
+                TextBox textBox = sender as TextBox;
+                e.Handled = Regex.IsMatch(e.Text, "[^0-9.]+");
+            }        
         }
 
-        private void Chiper_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Cipher_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            EncodedText.Clear();
             DecodedText.Clear();
-            if (Chiper.SelectedIndex == 0)
+            tbKey.Clear();
+            if (Cipher.SelectedIndex == 0 || Cipher.SelectedIndex == 2)
             {
                 tbKey.IsHitTestVisible = true;
             }
