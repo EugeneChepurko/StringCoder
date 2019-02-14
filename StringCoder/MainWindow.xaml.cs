@@ -16,13 +16,14 @@ namespace StringCoder
         readonly char[] alphabetUpper = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
         readonly string[] charsToRemove = new string[] { ",", ".", ";", ":", "@", "!", "#", "$", "%", "*", "(", ")", "[", "]", "^", "?", "|", "+", "-", "&", @"\", "/", "'" };
         private static int key = 0;
+        int Xkey, Ytext;
         string current = null;
         string prev = null;
 
 
         public MainWindow()
         {
-            InitializeComponent();         
+            InitializeComponent();
         }
 
         private void EncodeText(object sender, RoutedEventArgs e)
@@ -57,7 +58,7 @@ namespace StringCoder
                                 EncodedText.Text += text[i].ToString();
                                 break;
                             }
-                            continue;
+                            //continue; ?? need ?
                         }
                     }
                 }
@@ -77,19 +78,19 @@ namespace StringCoder
                 if (string.IsNullOrEmpty(text))
                 {
                     text = string.Empty;
-                }     
+                }
 
                 using (SHA256Managed sha = new SHA256Managed())
                 {
                     byte[] textData = Encoding.Default.GetBytes(text);
                     byte[] hash = sha.ComputeHash(textData);
-                    EncodedText.Text = BitConverter.ToString(hash).Replace("-", string.Empty); 
+                    EncodedText.Text = BitConverter.ToString(hash).Replace("-", string.Empty);
                 }
                 current = EncodedText.Text;
             }
 
             //  Vigenere cipher
-            if(Cipher.Text == "Vigenere cipher")
+            if (Cipher.Text == "Vigenere cipher")
             {
                 char[] text = YourText.Text.ToCharArray().Where(s => !char.IsWhiteSpace(s)).ToArray();
                 char[] key = tbKey.Text.ToCharArray();
@@ -110,42 +111,53 @@ namespace StringCoder
                             Vigenere_Table[i, j] = alphabet[temp];
                         }
                     }
-                    for (int i = 0; i < text.Length; i++)
+
+                    for (int t = 0, k = 0; t < text.Length || k < key.Length; t++, k++)
                     {
-                        for (int j = 0; j <= alphabet.Length; j++)
+                        if(k == key.Length)
                         {
-                            for (int k = 0; k <= key.Length; k++)
+                            k = 0;
+                            for (int y = 0; y <= alphabet.Length; y++)
                             {
-                                //1st variant
-                                if (text[i].ToString() == alphabet[j].ToString() && key[k].ToString() == alphabet[j].ToString())
+                                if (text[t].ToString() == alphabet[y].ToString())
                                 {
-
-                                    text[i] = key[k];
-
-                                    EncodedText.Text += key[k];
+                                    Ytext = y;
+                                    for (int x = 0; x <= alphabet.Length; x++)
+                                    {
+                                        if (key[k].ToString() == alphabet[x].ToString())
+                                        {
+                                            Xkey = x;
+                                            EncodedText.Text += Vigenere_Table[Ytext, Xkey].ToString();
+                                            break;
+                                        }
+                                    }
                                     break;
                                 }
-                                continue;
-                                //2nd variant
-                                if (text[i].ToString() == Vigenere_Table[i, 0].ToString() && key[i].ToString() == Vigenere_Table[0, i].ToString())
+                            }
+                            //break;
+                        }
+                        else
+                        {
+                            for (int y = 0; y <= alphabet.Length; y++)
+                            {
+                                if (text[t].ToString() == alphabet[y].ToString())
                                 {
-
+                                    Ytext = y;
+                                    for (int x = 0; x <= alphabet.Length; x++)
+                                    {
+                                        if (key[k].ToString() == alphabet[x].ToString())
+                                        {
+                                            Xkey = x;
+                                            EncodedText.Text += Vigenere_Table[Ytext, Xkey].ToString();
+                                            break;
+                                        }
+                                    }
+                                    break;
                                 }
                             }
-                                                     
                         }
-                        //i = Vigenere_Table[0, 0];
+                        //break; //????
                     }
-
-
-
-                    //for (int i = 0; i < text.Length; i++)
-                    //{
-                    //    for (int j = 0; j < VigenereCipher().Length; j++)
-                    //    {
-                    //        if(text[i] == )
-                    //    }
-                    //}
                 }
                 catch (Exception ex)
                 {
@@ -190,7 +202,7 @@ namespace StringCoder
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
-                }  
+                }
             }
 
             // HASHFUNC
@@ -212,8 +224,8 @@ namespace StringCoder
                     else
                     {
                         MessageBox.Show("Hashas is not concurrence!");
-                    }                     
-                }            
+                    }
+                }
             }
         }
 
@@ -245,7 +257,7 @@ namespace StringCoder
         // events
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            if(Cipher.SelectedIndex == 2)
+            if (Cipher.SelectedIndex == 2)
             {
                 TextBox textBox = sender as TextBox;
                 e.Handled = Regex.IsMatch(e.Text, "[^a-z.]+");
@@ -254,7 +266,7 @@ namespace StringCoder
             {
                 TextBox textBox = sender as TextBox;
                 e.Handled = Regex.IsMatch(e.Text, "[^0-9.]+");
-            }        
+            }
         }
 
         private void Cipher_SelectionChanged(object sender, SelectionChangedEventArgs e)
