@@ -114,7 +114,11 @@ namespace StringCoder
 
                     for (int t = 0, k = 0; t < text.Length || k < key.Length; t++, k++)
                     {
-                        if(k == key.Length)
+                        if (t >= text.Length)
+                        {
+                            break;
+                        }
+                        if (k == key.Length/*t % key.Length == 0*/)
                         {
                             k = 0;
                             for (int y = 0; y <= alphabet.Length; y++)
@@ -134,7 +138,6 @@ namespace StringCoder
                                     break;
                                 }
                             }
-                            //break;
                         }
                         else
                         {
@@ -156,7 +159,6 @@ namespace StringCoder
                                 }
                             }
                         }
-                        //break; //????
                     }
                 }
                 catch (Exception ex)
