@@ -3,7 +3,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,7 +19,6 @@ namespace StringCoder
         string current = null;
         string prev = null;
 
-
         public MainWindow()
         {
             InitializeComponent();
@@ -31,6 +29,7 @@ namespace StringCoder
             // Caesar cipher
             if (Cipher.Text == "Caesar cipher" && tbKey.Text != "")
             {
+                lbDecText.Content = "  Your Decoded text";
                 Decode.Content = "Decode";
                 key = Convert.ToInt32(tbKey.Text);
                 if (EncodedText.Text != "")
@@ -54,8 +53,8 @@ namespace StringCoder
                             {
                                 char.ToLower(text[i]);
 
-                                text[i] = Convert.ToChar(alphabet[(j + key) % alphabet.Length]);
-                                EncodedText.Text += text[i].ToString();
+                                //text[i] = Convert.ToChar(alphabet[(j + key) % alphabet.Length]);    optimize :D
+                                EncodedText.Text += Convert.ToChar(alphabet[(j + key) % alphabet.Length]);
                                 break;
                             }
                             //continue; ?? need ?
@@ -80,7 +79,7 @@ namespace StringCoder
                     text = string.Empty;
                 }
 
-                using (SHA256Managed sha = new SHA256Managed())
+                using (SHA512Managed sha = new SHA512Managed())
                 {
                     byte[] textData = Encoding.Default.GetBytes(text);
                     byte[] hash = sha.ComputeHash(textData);
@@ -92,6 +91,12 @@ namespace StringCoder
             //  Vigenere cipher
             if (Cipher.Text == "Vigenere cipher")
             {
+                lbDecText.Content = "  Your Decoded text";
+                Decode.Content = "Decode";
+                if (EncodedText.Text != "")
+                {
+                    EncodedText.Clear();
+                }
                 char[] text = YourText.Text.ToCharArray().Where(s => !char.IsWhiteSpace(s)).ToArray();
                 char[] key = tbKey.Text.ToCharArray();
                 try
@@ -275,6 +280,7 @@ namespace StringCoder
         {
             EncodedText.Clear();
             DecodedText.Clear();
+            tbTextfromDecrHash.Clear();
             tbKey.Clear();
             if (Cipher.SelectedIndex == 0 || Cipher.SelectedIndex == 2)
             {
