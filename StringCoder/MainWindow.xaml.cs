@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -13,7 +12,7 @@ namespace StringCoder
     {
         readonly char[] alphabet = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
         readonly char[] alphabetUpper = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-        readonly string[] charsToRemove = new string[] { ",", ".", ";", ":", "@", "!", "#", "$", "%", "*", "(", ")", "[", "]", "^", "?", "|", "+", "-", "&", @"\", "/", "'" };
+        readonly string[] charsToRemove = new string[] { ",", ".", ";", ":", "@", "!", "#", "$", "%", "*", "(", ")", "[", "]", "^", "?", "|", "+", "-", "&", @"\", "/", "'", "\"" };
         private static int key = 0;
         int Xkey, Ytext;
         string current = null;
@@ -26,7 +25,7 @@ namespace StringCoder
 
         private void EncodeText(object sender, RoutedEventArgs e)
         {
-            // Caesar cipher
+            // Caesar cipher encode
             if (Cipher.Text == "Caesar cipher" && tbKey.Text != "")
             {
                 lbDecText.Content = "  Your Decoded text";
@@ -53,11 +52,9 @@ namespace StringCoder
                             {
                                 char.ToLower(text[i]);
 
-                                //text[i] = Convert.ToChar(alphabet[(j + key) % alphabet.Length]);    optimize :D
                                 EncodedText.Text += Convert.ToChar(alphabet[(j + key) % alphabet.Length]);
                                 break;
                             }
-                            //continue; ?? need ?
                         }
                     }
                 }
@@ -67,7 +64,7 @@ namespace StringCoder
                 }
             }
 
-            // HASHFUNC
+            // HASHFUNC encode
             if (Cipher.Text == "HashFunc")
             {
                 lbDecText.Content = "  Comparable hash";
@@ -79,7 +76,7 @@ namespace StringCoder
                     text = string.Empty;
                 }
 
-                using (SHA512Managed sha = new SHA512Managed())
+                using (System.Security.Cryptography.SHA512Managed sha = new System.Security.Cryptography.SHA512Managed())
                 {
                     byte[] textData = Encoding.Default.GetBytes(text);
                     byte[] hash = sha.ComputeHash(textData);
@@ -88,7 +85,7 @@ namespace StringCoder
                 current = EncodedText.Text;
             }
 
-            //  Vigenere cipher
+            //  Vigenere cipher encode
             if (Cipher.Text == "Vigenere cipher")
             {
                 lbDecText.Content = "  Your Decoded text";
@@ -96,6 +93,10 @@ namespace StringCoder
                 if (EncodedText.Text != "")
                 {
                     EncodedText.Clear();
+                }
+                foreach (var item in charsToRemove)
+                {
+                    YourText.Text = YourText.Text.Replace(item, string.Empty);
                 }
                 char[] text = YourText.Text.ToCharArray().Where(s => !char.IsWhiteSpace(s)).ToArray();
                 char[] key = tbKey.Text.ToCharArray();
@@ -175,7 +176,7 @@ namespace StringCoder
 
         private void DecodeText(object sender, RoutedEventArgs e)
         {
-            // Caesar cipher 
+            // Caesar cipher decode
             if (Cipher.Text == "Caesar cipher")
             {
                 if (DecodedText.Text != "")
@@ -212,7 +213,7 @@ namespace StringCoder
                 }
             }
 
-            // HASHFUNC
+            // HASHFUNC decode
             if (Cipher.Text == "HashFunc")
             {
                 if (DecodedText.Text == "")
@@ -232,6 +233,88 @@ namespace StringCoder
                     {
                         MessageBox.Show("Hashas is not concurrence!");
                     }
+                }
+            }
+
+            //  Vigenere cipher decode
+            if (Cipher.Text == "Vigenere cipher")
+            {
+                if (DecodedText.Text != "")
+                {
+                    DecodedText.Clear();
+                }
+                char[] text = EncodedText.Text.ToCharArray().Where(s => !char.IsWhiteSpace(s)).ToArray();
+                char[] key = tbKey.Text.ToCharArray();
+                try
+                {
+                    char[,] Vigenere_Table = new char[26, 26];
+
+                    int temp = 0;
+                    for (int i = 0; i < alphabet.Length; i++)
+                    {
+                        for (int j = 0; j < 26; j++)
+                        {
+                            temp = j + i;
+                            if (temp >= 26)
+                            {
+                                temp = temp % 26;
+                            }
+                            Vigenere_Table[i, j] = alphabet[temp];
+                        }
+                    }
+                    // DECRYPT VIGENERE
+                    for (int t = 0, k = 0; t < text.Length || k < key.Length; t++, k++)
+                    {
+                        if (t >= text.Length)
+                        {
+                            break;
+                        }
+                        if (k == key.Length)
+                        {
+                            k = 0;
+                            for (int y = 0; y <= alphabet.Length; y++)
+                            {
+                                if (key[k].ToString() == alphabet[y].ToString())
+                                {
+                                    Xkey = y;
+                                    for (int x = 0; x <= alphabet.Length; x++)
+                                    {
+                                        Ytext = x;
+                                        if (Vigenere_Table[Ytext, Xkey].ToString() == text[t].ToString())
+                                        {
+                                            DecodedText.Text += alphabet[x].ToString();
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (int y = 0; y <= alphabet.Length; y++)
+                            {
+                                if (key[k].ToString() == alphabet[y].ToString())
+                                {
+                                    Xkey = y;
+                                    for (int x = 0; x <= alphabet.Length; x++)
+                                    {
+                                        Ytext = x;
+                                        if(Vigenere_Table[Ytext, Xkey].ToString() == text[t].ToString())
+                                        {
+                                            DecodedText.Text += alphabet[x].ToString();
+                                            break;
+                                        }                                       
+                                    }
+                                    break;
+                                }
+                            }    
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
                 }
             }
         }
